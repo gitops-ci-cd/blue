@@ -5,34 +5,33 @@ workflow "Build and push to Docker" {
   on = "pull_request"
 }
 
-action "label added - deploy" {
+action "check -  deploy label" {
   uses = "actions/bin/filter@master"
   args = "label deploy"
 }
 
 action "docker login" {
   uses = "actions/docker/login@8cdf801b322af5f369e00d85e9cf3a7122f49108"
-  needs = [ 
-    "label added - deploy" 
-  ]
   secrets = [
     "DOCKER_PASSWORD",
     "DOCKER_USERNAME",
   ]
+  needs = ["check -  deploy label"]
 }
 
 action "docker build" {
   uses = "actions/docker/cli@8cdf801b322af5f369e00d85e9cf3a7122f49108"
-  needs = [
-    "docker login"
-  ]
   args = "build -t $SOURCE_IMAGE ."
   secrets = ["SOURCE_IMAGE"]
+  needs = ["check -  deploy label"]
 }
 
 action "docker tag" {
   uses = "actions/docker/tag@8cdf801b322af5f369e00d85e9cf3a7122f49108"
-  needs = ["docker build"]
+  needs = [
+    "docker build",
+    "docker login",
+  ]
   args = "$SOURCE_IMAGE $TARGET_IMAGE"
   secrets = ["TARGET_IMAGE", "SOURCE_IMAGE"]
 }
@@ -46,10 +45,10 @@ action "docker push sha" {
 
 workflow "Clean up" {
   on = "pull_request"
-  resolves = ["PR closed"]
+  resolves = ["check - PR closed"]
 }
 
-action "PR closed" {
+action "check - PR closed" {
   uses = "actions/bin/filter@4227a6636cb419f91a0d1afb1216ecfab99e433a"
   args = "action closed"
 }
