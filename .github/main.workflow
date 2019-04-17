@@ -12,6 +12,9 @@ action "label added - deploy" {
 
 action "docker login" {
   uses = "actions/docker/login@8cdf801b322af5f369e00d85e9cf3a7122f49108"
+  needs = [ 
+    "label added - deploy" 
+  ]
   secrets = [
     "DOCKER_PASSWORD",
     "DOCKER_USERNAME",
@@ -21,8 +24,7 @@ action "docker login" {
 action "docker build" {
   uses = "actions/docker/cli@8cdf801b322af5f369e00d85e9cf3a7122f49108"
   needs = [
-    "docker login",
-    "label added - deploy",
+    "docker login"
   ]
   args = "build -t $SOURCE_IMAGE ."
   secrets = ["SOURCE_IMAGE"]
