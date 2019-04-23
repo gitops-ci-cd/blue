@@ -48,7 +48,7 @@ action "git commit cluster changes" {
   uses = "./feature_overlay"
   needs = ["docker tag"]
   args = "--cluster-repo dudo/k8s_colors"
-  secrets = ["SOURCE_IMAGE", "TARGET_IMAGE"]
+  secrets = ["SOURCE_IMAGE", "TARGET_IMAGE", "GITHUB_TOKEN"]
 }
 
 workflow "Clean up" {
