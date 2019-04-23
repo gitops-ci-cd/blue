@@ -1,6 +1,7 @@
-workflow "Build and push to Docker" {
+workflow "Build, push, and deploy" {
   resolves = [
     "docker push sha",
+    "git commit cluster changes",
   ]
   on = "pull_request"
 }
@@ -41,6 +42,13 @@ action "docker push sha" {
   needs = ["docker tag"]
   args = "push $TARGET_IMAGE:$IMAGE_SHA"
   secrets = ["TARGET_IMAGE"]
+}
+
+action "git commit cluster changes" {
+  uses = "./feature_overlay"
+  needs = ["docker tag"]
+  args = "--cluster-repo dudo/k8s_colors"
+  secrets = ["SOURCE_IMAGE", "TARGET_IMAGE"]
 }
 
 workflow "Clean up" {

@@ -13,11 +13,11 @@ $opts = Slop.parse do |o|
   o.separator ''
   o.separator 'options:'
   o.string '-s', '--service', 
-    'the service to deploy to your cluster', required: true
+    'the service to deploy to your cluster', default: ENV['SOURCE_IMAGE']
   o.string '-r', '--cluster-repo', 
     'GitHub repository that controls your cluster', required: true
   o.string '-i', '--target-image', 
-    'remotely hosted target image', required: true
+    'remotely hosted target image', default: ENV['TARGET_IMAGE']
   o.string '-n', '--namespace', 
     'desired namespace, or inferred from GITHUB_REF', default: ENV['GITHUB_REF']&.split('/')&.reject{ |i| %w(refs heads).include? i }&.join('-') # TODO: include special chars
   o.string '-t', '--tag', 
@@ -40,7 +40,7 @@ def exit_code(message, number)
 end
 
 # ensure we have all the appropriate parameters to proceed
-arguments = [$opts[:namespace], $opts[:tag]]
+arguments = [$opts[:service], $opts[:namespace], $opts[:tag], $opts[:target_image]]
 exit_code('Missing required arguments', 2) unless arguments.all? 
 
 case $opts[:github_event]
