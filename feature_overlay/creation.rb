@@ -11,10 +11,11 @@ Octokit.configure do |c|
 end
 
 class Creation
-  attr_reader :client, :services, :service, :image, :namespace
+  attr_reader :client, :services, :service, :image, :namespace, :repo
 
   def initialize
-    @client = Octokit::Client.new(access_token: $opts[:github_token])
+    @client = Octokit::Client.new(access_token: $opts[:token])
+    @repo = $opts[:cluster_repo]
     @services = fetch_services
     @service = $opts[:service]
     @namespace = $opts[:namespace]
@@ -38,7 +39,7 @@ class Creation
 
   # identify the services that need to be overlaid
   def fetch_services
-    client.contents($opts[:cluster_repo]).select{ |c| c[:type] == 'dir' }.map(&:name)
+    client.contents(repo).select{ |c| c[:type] == 'dir' }.map(&:name)
   end
 
   def create_primary_manifests
@@ -53,7 +54,7 @@ class Creation
 
   def create_supporting_manifests(svc)
     # for every other service, point the service to the default namespace, and skip the deployment
-    deployment = client.contents($opts[:cluster_repo], path: [svc, 'overlays', namespace, 'deployment.yaml'].join('/')) rescue nil
+    deployment = client.contents(repo, path: [svc, 'overlays', namespace, 'deployment.yaml'].join('/')) rescue nil
     return if deployment
 
     @new_manifests.merge! Templates::ServiceExternalName.new(service: svc, namespace: namespace).file
@@ -61,7 +62,6 @@ class Creation
   end
 
   def commit_files_to_github
-    repo = $opts[:cluster_repo]
     ref = 'heads/master'
     sha_latest_commit = client.ref(repo, ref).object.sha
     
