@@ -42,10 +42,19 @@ class Creation
     client.contents(repo).select{ |c| c[:type] == 'dir' }.map(&:name)
   end
 
-  def create_primary_manifests
-    # we always need a new namespace
-    @new_manifests.merge! Templates::Namespace.new(service: service, namespace: namespace).file
+  def create_namespace_manifest
+    namespace = services.map do |svc|
+      client.contents(repo, path: [svc, 'overlays', namespace, 'namespace.yaml'].join('/'))
+    rescue 
+      nil
+    end
+    return if namespace.any?
 
+    @new_manifests.merge! Templates::Namespace.new(service: service, namespace: namespace).file
+  end
+
+  def create_primary_manifests
+    create_namespace_manifest
     # check each type of file for the service we're updating, and create an overlay
     @new_manifests.merge! Templates::Deployment.new(service: service, namespace: namespace, image: image).file
     @new_manifests.merge! Templates::Service.new(service: service, namespace: namespace).file
