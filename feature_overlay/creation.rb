@@ -43,12 +43,12 @@ class Creation
   end
 
   def create_namespace_manifest
-    namespace = services.map do |svc|
+    manifests = services.map do |svc|
       client.contents(repo, path: [svc, 'overlays', namespace, 'namespace.yaml'].join('/'))
     rescue 
       nil
     end
-    return if namespace.any?
+    return if manifests.any?
 
     @new_manifests.merge! Templates::Namespace.new(service: service, namespace: namespace).file
   end
