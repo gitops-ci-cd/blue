@@ -1,5 +1,12 @@
+# frozen_string_literal: true
+
 require 'octokit'
-# require 'byebug'
+
+require_relative 'templates/deployment'
+require_relative 'templates/ingress'
+require_relative 'templates/namespace'
+require_relative 'templates/service_external_name'
+require_relative 'templates/service'
 
 Octokit.configure do |c|
   c.connection_options = {
@@ -14,6 +21,7 @@ class Creation
   attr_reader :client, :services, :service, :image, :namespace, :repo
 
   def initialize
+    puts 'Connecting to GitHub...'
     @client = Octokit::Client.new(access_token: $opts[:token])
     @repo = $opts[:cluster_repo]
     @services = fetch_services
@@ -24,6 +32,7 @@ class Creation
       exit_code("Unknown service. Please choose one of [#{services.join(', ')}]", 2) 
     end
     @new_manifests = {}
+    puts "Found services #{services.join(', ')}"
   end
 
   def self.perform
@@ -39,6 +48,7 @@ class Creation
 
   # identify the services that need to be overlaid
   def fetch_services
+    puts 'Collecting known services...'
     client.contents(repo).select{ |c| c[:type] == 'dir' }.map(&:name)
   end
 
@@ -48,13 +58,18 @@ class Creation
     rescue 
       nil
     end
-    return if manifests.any?
-
-    @new_manifests.merge! Templates::Namespace.new(service: service, namespace: namespace).file
+    if manifests.any?
+      puts "Using existing namespace '#{namespace}'"
+    else
+      puts "Creating namespace '#{namespace}'..."
+      @new_manifests.merge! Templates::Namespace.new(namespace: namespace).file
+    end
   end
 
   def create_primary_manifests
     create_namespace_manifest
+    
+    puts "Creating #{service} manifests with #{image}..."
     # check each type of file for the service we're updating, and create an overlay
     @new_manifests.merge! Templates::Deployment.new(service: service, namespace: namespace, image: image).file
     @new_manifests.merge! Templates::Service.new(service: service, namespace: namespace).file
@@ -64,13 +79,17 @@ class Creation
   def create_supporting_manifests(svc)
     # for every other service, point the service to the default namespace, and skip the deployment
     deployment = client.contents(repo, path: [svc, 'overlays', namespace, 'deployment.yaml'].join('/')) rescue nil
-    return if deployment
-
-    @new_manifests.merge! Templates::ServiceExternalName.new(service: svc, namespace: namespace).file
-    @new_manifests.merge! Templates::Ingress.new(service: svc, namespace: namespace).file
+    if deployment
+      puts "Using existing manifests for #{svc}"
+    else
+      puts "Creating #{svc} manifests pointing to #{svc}.default.svc.cluster.local..."
+      @new_manifests.merge! Templates::ServiceExternalName.new(service: svc, namespace: namespace).file
+      @new_manifests.merge! Templates::Ingress.new(service: svc, namespace: namespace).file
+    end
   end
 
   def commit_files_to_github
+    puts "Committing files to GitHub repository #{repo}..."
     ref = 'heads/master'
     sha_latest_commit = client.ref(repo, ref).object.sha
     

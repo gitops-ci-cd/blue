@@ -10,12 +10,12 @@ LABEL "com.github.actions.name"="Feature Overlay"
 LABEL "com.github.actions.description"="This creates a namespace for a feature and ensures your services are still connected"
 # COPY LICENSE README.md THIRD_PARTY_NOTICE.md /
 
-COPY Gemfile Gemfile.lock creation.rb ./
-COPY templates ./templates
-
+COPY Gemfile Gemfile.lock ./
 RUN bundle install --without=development test
 
 COPY feature_overlay.rb /bin/feature_overlay
+COPY creation.rb /bin/creation.rb
+COPY templates /bin/templates
 RUN ["chmod", "+x", "/bin/feature_overlay"]
 
 ENTRYPOINT ["feature_overlay"]
