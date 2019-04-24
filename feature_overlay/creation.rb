@@ -62,7 +62,7 @@ class Creation
       puts "Using existing namespace '#{namespace}'"
     else
       puts "Creating namespace '#{namespace}'..."
-      @new_manifests.merge! Templates::Namespace.new(namespace: namespace).file
+      @new_manifests.merge! Templates::Namespace.new(service: service, namespace: namespace).file
     end
   end
 
