@@ -1,0 +1,50 @@
+# https://help.github.com/en/articles/workflow-syntax-for-github-actions
+
+on: pull_request
+name: Build, push, and deploy
+jobs:
+  docker:
+    name: Build and push Docker Image
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - uses: actions/bin/filter@master
+      with:
+        args: label deploy
+    - name: docker login
+      uses: actions/docker/login@master
+      env:
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+    - name: docker build
+      uses: actions/docker/cli@master
+      env:
+        SERVICE: ${{ secrets.SERVICE }}
+      with:
+        args: build -t $SERVICE .
+    - name: docker tag
+      uses: actions/docker/tag@master
+      env:
+        SERVICE: ${{ secrets.SERVICE }}
+        TARGET_IMAGE: ${{ secrets.TARGET_IMAGE }}
+      with:
+        args: $SERVICE $TARGET_IMAGE
+    - name: docker push sha
+      uses: actions/docker/cli@master
+      env:
+        TARGET_IMAGE: ${{ secrets.TARGET_IMAGE }}
+      with:
+        args: push $TARGET_IMAGE:$IMAGE_SHA
+  deploy:
+    name: Deploy to Cluster
+    runs-on: ubuntu-latest
+    needs: docker
+    steps:
+    - uses: actions/checkout@master
+    - name: Kustomized Namespace - Create Overlay
+      uses: zyngl/create_kustomized_namespace@v0.9.0
+      env:
+        CLUSTER_REPO: ${{ secrets.CLUSTER_REPO }}
+        SERVICE: ${{ secrets.SERVICE }}
+        TARGET_IMAGE: ${{ secrets.TARGET_IMAGE }}
+        TOKEN: ${{ secrets.TOKEN }}

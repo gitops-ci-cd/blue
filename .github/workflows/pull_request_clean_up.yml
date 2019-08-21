@@ -1,0 +1,16 @@
+on: pull_request
+name: Clean up
+jobs:
+  tear_down:
+    name: Tear down feature branch
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - uses: actions/bin/filter@master
+      with:
+        args: action closed
+    - name: Kustomized Namespace - Cleanup Overlay
+      uses: zyngl/cleanup_kustomized_namespace@v0.9.0
+      env:
+        CLUSTER_REPO: ${{ secrets.CLUSTER_REPO }}
+        TOKEN: ${{ secrets.TOKEN }}
