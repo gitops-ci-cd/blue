@@ -9,7 +9,8 @@ jobs:
     name: Tear down feature branch
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
+    - name: ENV
+      run: env
     - name: Kustomized Namespace - Cleanup Overlay
       env:
         TOKEN: ${{ secrets.TOKEN }}
