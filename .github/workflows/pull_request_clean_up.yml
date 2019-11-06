@@ -2,6 +2,8 @@ on:
   pull_request:
     types: [unlabeled]
 name: Clean up
+env:
+  CLUSTER_REPO: ${{ secrets.CLUSTER_REPO }}
 jobs:
   tear_down:
     if: github.event_name == 'label' && github.event.label.name == 'deploy'
@@ -12,5 +14,4 @@ jobs:
     - name: Kustomized Namespace - Cleanup Overlay
       uses: zyngl/cleanup_kustomized_namespace@v0.9.0
       env:
-        CLUSTER_REPO: ${{ secrets.CLUSTER_REPO }}
         TOKEN: ${{ secrets.TOKEN }}

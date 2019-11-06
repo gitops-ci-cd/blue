@@ -4,6 +4,9 @@ on:
   pull_request:
     types: [labeled]
 name: Build, push, and deploy
+env:
+  SERVICE: ${{ secrets.SERVICE }}
+  TARGET_IMAGE: ${{ secrets.TARGET_IMAGE }}
 jobs:
   docker:
     if: github.event_name == 'label' && github.event.label.name == 'deploy'
@@ -18,21 +21,14 @@ jobs:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
     - name: docker build
       uses: actions/docker/cli@master
-      env:
-        SERVICE: ${{ secrets.SERVICE }}
       with:
         args: build -t $SERVICE .
     - name: docker tag
       uses: actions/docker/tag@master
-      env:
-        SERVICE: ${{ secrets.SERVICE }}
-        TARGET_IMAGE: ${{ secrets.TARGET_IMAGE }}
       with:
         args: $SERVICE $TARGET_IMAGE
     - name: docker push sha
       uses: actions/docker/cli@master
-      env:
-        TARGET_IMAGE: ${{ secrets.TARGET_IMAGE }}
       with:
         args: push $TARGET_IMAGE:$IMAGE_SHA
   deploy:
@@ -40,12 +36,11 @@ jobs:
     name: Deploy to Cluster
     runs-on: ubuntu-latest
     needs: docker
+    env:
+      CLUSTER_REPO: ${{ secrets.CLUSTER_REPO }}
     steps:
     - uses: actions/checkout@master
     - name: Kustomized Namespace - Create Overlay
       uses: zyngl/create_kustomized_namespace@v0.9.0
       env:
-        CLUSTER_REPO: ${{ secrets.CLUSTER_REPO }}
-        SERVICE: ${{ secrets.SERVICE }}
-        TARGET_IMAGE: ${{ secrets.TARGET_IMAGE }}
         TOKEN: ${{ secrets.TOKEN }}
