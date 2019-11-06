@@ -30,8 +30,6 @@ jobs:
       CLUSTER_REPO: dudo/k8s_colors
     steps:
     - uses: actions/checkout@v1
-    - name: Print ENV
-      run: env
     - name: Kustomized Namespace - Create Overlay
       env:
         TOKEN: ${{ secrets.TOKEN }}
