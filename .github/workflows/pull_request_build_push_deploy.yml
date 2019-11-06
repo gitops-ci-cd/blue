@@ -4,48 +4,33 @@ on:
   pull_request:
     types: [labeled]
 name: Build, push, and deploy
+env:
+  SERVICE: ${{ secrets.SERVICE }}
+  TARGET_IMAGE: ${{ secrets.TARGET_IMAGE }}
 jobs:
   docker:
-    if: github.event_name == 'label' && github.event.label.name == 'deploy'
     name: Build and push Docker Image
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
-    - name: docker login
-      uses: actions/docker/login@master
+    - uses: actions/checkout@v1
+    - name: Registry
       env:
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-    - name: docker build
-      uses: actions/docker/cli@master
-      env:
-        SERVICE: ${{ secrets.SERVICE }}
-      with:
-        args: build -t $SERVICE .
-    - name: docker tag
-      uses: actions/docker/tag@master
-      env:
-        SERVICE: ${{ secrets.SERVICE }}
-        TARGET_IMAGE: ${{ secrets.TARGET_IMAGE }}
-      with:
-        args: $SERVICE $TARGET_IMAGE
-    - name: docker push sha
-      uses: actions/docker/cli@master
-      env:
-        TARGET_IMAGE: ${{ secrets.TARGET_IMAGE }}
-      with:
-        args: push $TARGET_IMAGE:$IMAGE_SHA
+      run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+    - name: Build
+      run: docker build -t $TARGET_IMAGE:${GITHUB_SHA::7} .
+    - name: Push
+      run: docker push $TARGET_IMAGE:${GITHUB_SHA::7}
   deploy:
-    if: github.event_name == 'label' && github.event.label.name == 'deploy'
     name: Deploy to Cluster
     runs-on: ubuntu-latest
     needs: docker
+    env:
+      CLUSTER_REPO: ${{ secrets.CLUSTER_REPO }}
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v1
     - name: Kustomized Namespace - Create Overlay
       uses: zyngl/create_kustomized_namespace@v0.9.0
       env:
-        CLUSTER_REPO: ${{ secrets.CLUSTER_REPO }}
-        SERVICE: ${{ secrets.SERVICE }}
-        TARGET_IMAGE: ${{ secrets.TARGET_IMAGE }}
         TOKEN: ${{ secrets.TOKEN }}
