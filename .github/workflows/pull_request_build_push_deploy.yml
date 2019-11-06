@@ -35,5 +35,5 @@ jobs:
         TOKEN: ${{ secrets.TOKEN }}
       uses: zyngl/create_kustomized_namespace@v0.9.0
       with:
-        args: --flux
+        args: --flux --namespace $GITHUB_HEAD_REF
 
