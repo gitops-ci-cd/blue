@@ -33,7 +33,7 @@ jobs:
     - name: Kustomized Namespace - Create Overlay
       env:
         TOKEN: ${{ secrets.TOKEN }}
-      uses: zyngl/create_kustomized_namespace@v0.9.0
+      uses: zyngl/create_kustomized_namespace@v0.9.1
       with:
         args: --flux
 
