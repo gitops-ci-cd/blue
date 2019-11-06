@@ -3,7 +3,7 @@ on:
     types: [closed]
 name: Clean up
 env:
-  CLUSTER_REPO: ${{ secrets.CLUSTER_REPO }}
+  CLUSTER_REPO: dudo/k8s_colors
 jobs:
   tear_down:
     name: Tear down feature branch
@@ -11,6 +11,8 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Kustomized Namespace - Cleanup Overlay
-      uses: zyngl/cleanup_kustomized_namespace@v0.9.0
       env:
         TOKEN: ${{ secrets.TOKEN }}
+      uses: zyngl/cleanup_kustomized_namespace@v0.9.0
+      with:
+        args: --flux

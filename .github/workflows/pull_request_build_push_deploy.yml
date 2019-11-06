@@ -5,8 +5,7 @@ on:
     types: [labeled]
 name: Build, push, and deploy
 env:
-  SERVICE: ${{ secrets.SERVICE }}
-  TARGET_IMAGE: ${{ secrets.TARGET_IMAGE }}
+  TARGET_IMAGE: dudo/blue
 jobs:
   docker:
     name: Build and push Docker Image
@@ -27,10 +26,14 @@ jobs:
     runs-on: ubuntu-latest
     needs: docker
     env:
-      CLUSTER_REPO: ${{ secrets.CLUSTER_REPO }}
+      SERVICE: blue
+      CLUSTER_REPO: dudo/k8s_colors
     steps:
     - uses: actions/checkout@v1
     - name: Kustomized Namespace - Create Overlay
-      uses: zyngl/create_kustomized_namespace@v0.9.0
       env:
         TOKEN: ${{ secrets.TOKEN }}
+      uses: zyngl/create_kustomized_namespace@v0.9.0
+      with:
+        args: --flux
+
