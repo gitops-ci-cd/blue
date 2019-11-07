@@ -6,6 +6,7 @@ env:
   CLUSTER_REPO: dudo/k8s_colors
 jobs:
   tear_down:
+    if: github.event.label.name == 'deploy'
     name: Tear down feature branch
     runs-on: ubuntu-latest
     steps:
