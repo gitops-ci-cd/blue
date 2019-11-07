@@ -8,13 +8,11 @@ env:
   TARGET_IMAGE: dudo/blue
 jobs:
   docker:
-    if: false
+    if: github.event.label.name == 'deploy'
     name: Build and push Docker Image
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - name: Dump GitHub data
-      run: echo ${{ github.event.label.name == 'deploy' }}
     - name: Registry
       env:
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
