@@ -8,7 +8,7 @@ env:
   TARGET_IMAGE: dudo/blue
 jobs:
   docker:
-    if: true
+    if: false
     name: Build and push Docker Image
     runs-on: ubuntu-latest
     steps:
