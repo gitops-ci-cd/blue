@@ -8,7 +8,7 @@ env:
   TARGET_IMAGE: dudo/blue
 jobs:
   docker:
-    if: github.event.label.name == deploy
+    if: github.event.label.name == 'deploy'
     name: Build and push Docker Image
     runs-on: ubuntu-latest
     steps:
