@@ -13,6 +13,6 @@ jobs:
     - name: Kustomized Namespace - Cleanup Overlay
       env:
         TOKEN: ${{ secrets.TOKEN }}
-      uses: zyngl/cleanup_kustomized_namespace@v1
+      uses: zyngl/cleanup_kustomized_namespace@v1.1.0
       with:
         args: --flux
