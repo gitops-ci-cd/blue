@@ -3,6 +3,7 @@ on:
     types: [unlabeled]
 name: Clean up
 env:
+  SERVICE: blue
   CLUSTER_REPO: dudo/k8s_colors
 jobs:
   tear_down:
@@ -13,6 +14,6 @@ jobs:
     - name: Kustomized Namespace - Cleanup Overlay
       env:
         TOKEN: ${{ secrets.TOKEN }}
-      uses: zyngl/cleanup_kustomized_namespace@v1.1.0
+      uses: zyngl/cleanup_kustomized_namespace@v1.2.0
       with:
         args: --flux

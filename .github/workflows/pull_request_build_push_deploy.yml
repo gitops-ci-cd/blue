@@ -5,6 +5,7 @@ on:
     types: [labeled]
 name: Build, push, and deploy
 env:
+  SERVICE: blue
   TARGET_IMAGE: dudo/blue
 jobs:
   docker:
@@ -27,7 +28,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: docker
     env:
-      SERVICE: blue
       CLUSTER_REPO: dudo/k8s_colors
     steps:
     - name: Kustomized Namespace - Create Overlay
