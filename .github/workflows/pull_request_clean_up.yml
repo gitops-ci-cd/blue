@@ -1,16 +1,19 @@
+# https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions
+# https://help.github.com/en/actions/configuring-and-managing-workflows/using-environment-variables#default-environment-variables
+# https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions
+
 on:
   pull_request:
-    types: [unlabeled]
-name: Clean up
+    types: [closed]
+name: Overlay Clean up
 env:
   CLUSTER_REPO: dudo/k8s_colors
 jobs:
   tear_down:
-    if: github.event.label.name == 'deploy'
     name: Tear down feature branch
     runs-on: ubuntu-latest
     steps:
-    - name: Kustomized Namespace - Cleanup Overlay
+    - name: Cleanup
       env:
         TOKEN: ${{ secrets.TOKEN }}
       uses: zyngl/cleanup_kustomized_namespace@v1
