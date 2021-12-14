@@ -17,4 +17,4 @@ spec:
               service:
                 name: blue
                 port:
-                  number: 80
+                  name: web
