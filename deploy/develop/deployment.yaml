@@ -31,7 +31,7 @@ spec:
           name: blue
           ports:
             - name: web
-              containerPort: 8080
+              containerPort: 80
           # envFrom:
           #   - configMapRef:
           #       name: blue-config
