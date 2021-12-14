@@ -4,6 +4,6 @@ RUN echo "daemon off;" >> /etc/nginx/nginx.conf
 
 ADD ./index.html /usr/share/nginx/html
 
-EXPOSE 80 443
+EXPOSE 8080
 
 CMD ["nginx"]
