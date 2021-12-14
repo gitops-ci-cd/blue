@@ -10,4 +10,4 @@ spec:
   ports:
     - name: web
       port: 80
-      targetPort: web
+      # targetPort: web
