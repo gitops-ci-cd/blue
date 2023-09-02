@@ -1,3 +1,3 @@
-FROM nginx:1.21
+FROM nginx:1
 
-COPY ./index.html /usr/share/nginx/html/index.html
+COPY ./html/ /usr/share/nginx/html/

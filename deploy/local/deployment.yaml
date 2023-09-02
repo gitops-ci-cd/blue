@@ -1,0 +1,32 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blue
+spec:
+  selector:
+    matchLabels:
+      app: blue
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: blue
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: blue
+          image: dudo/blue:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: web
+              containerPort: 80
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100M
+            limits:
+              cpu: 200m
+              memory: 200M
