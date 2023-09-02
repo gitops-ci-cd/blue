@@ -18,7 +18,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: blue
-          image: ghcr.io/gitops-remote-dev/blue
+          image: ghcr.io/gitops-remote-dev/blue:master-96f6a51-1693687929
           imagePullPolicy: IfNotPresent
           ports:
             - name: web
