@@ -4,10 +4,10 @@ kind: HTTPRoute
 metadata:
   name: blue
 spec:
-  gateways:
-    allow: FromList
-    gatewayRefs:
-      - name: http
+  parentRefs:
+    - kind: Gateway
+      name: http
+      namespace: flux-system
   rules:
     - matches:
         - path:
