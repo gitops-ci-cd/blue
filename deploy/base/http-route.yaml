@@ -14,12 +14,11 @@ spec:
             type: PathPrefix
             value: /blue
       filters:
-        - type: RequestRedirect
-          requestRedirect:
+        - type: URLRewrite
+          urlRewrite:
             path:
-              type: ReplaceFullPath
-              replaceFullPath: /
-            statusCode: 301
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /
       backendRefs:
         - name: blue
           port: 8080
