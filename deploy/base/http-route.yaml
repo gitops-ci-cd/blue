@@ -1,0 +1,25 @@
+---
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: HTTPRoute
+metadata:
+  name: blue
+spec:
+  gateways:
+    allow: FromList
+    gatewayRefs:
+      - name: http
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /blue
+      filters:
+        - type: RequestRedirect
+          requestRedirect:
+            path:
+              type: ReplaceFullPath
+              replaceFullPath: /
+            statusCode: 301
+      backendRefs:
+        - name: blue
+          port: 8080
