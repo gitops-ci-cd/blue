@@ -7,7 +7,7 @@ spec:
   parentRefs:
     - kind: Gateway
       name: http
-      namespace: flux-system
+      namespace: kube-system
   rules:
     - matches:
         - path:
