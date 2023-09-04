@@ -12,13 +12,13 @@ spec:
     - matches:
         - path:
             type: PathPrefix
-            value: /blue
-      filters:
-        - type: URLRewrite
-          urlRewrite:
-            path:
-              type: ReplacePrefixMatch
-              replacePrefixMatch: /
+            value: /
+      # filters:
+      #   - type: URLRewrite
+      #     urlRewrite:
+      #       path:
+      #         type: ReplacePrefixMatch
+      #         replacePrefixMatch: /
       backendRefs:
         - name: blue
           port: 8080
