@@ -8,17 +8,10 @@ spec:
     - kind: Gateway
       name: http
       namespace: kube-system
+  hostnames:
+    - blue.dudo.dev
+    - blue.marin.dev
   rules:
-    - matches:
-        - path:
-            type: PathPrefix
-            value: /
-      # filters:
-      #   - type: URLRewrite
-      #     urlRewrite:
-      #       path:
-      #         type: ReplacePrefixMatch
-      #         replacePrefixMatch: /
-      backendRefs:
+    - backendRefs:
         - name: blue
           port: 8080
