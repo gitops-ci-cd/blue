@@ -8,5 +8,5 @@ spec:
   selector:
     app: blue
   ports:
-    - port: 80
+    - port: 8080
       targetPort: web
