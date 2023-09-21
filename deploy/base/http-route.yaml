@@ -10,7 +10,6 @@ spec:
       namespace: kube-system
   hostnames:
     - blue.dudo.dev
-    - blue.marin.dev
   rules:
     - backendRefs:
         - name: blue
