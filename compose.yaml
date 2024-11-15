@@ -1,10 +1,6 @@
 services:
   blue:
-    env_file:
-      - .env.local
-      - .env
     build:
       context: .
-    user: root
     volumes:
       - .:/usr/src/app:delegated
